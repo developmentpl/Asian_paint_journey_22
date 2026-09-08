@@ -89,7 +89,7 @@ export default function RoadEnvironment({ sceneConfig, splash, activeAction, gea
       </div>
 
       {/* 2. Rain */}
-      <RainEffect intensity={rainIntensity} />
+      {rainIntensity !== "none" && <RainEffect intensity={rainIntensity} />}
 
       {/* 3. Distant buildings / trees — each track renders two identical
           laps back to back so the scroll loop never runs out of skyline
@@ -132,13 +132,14 @@ export default function RoadEnvironment({ sceneConfig, splash, activeAction, gea
             ))}
           </div>
         </div>
-        <div className="road-sign-track-wrap">
+        {scenarioId !== 1 && <div className="road-sign-track-wrap">
           <div className="scenery-track scenery-track-signs">
             {Array.from({ length: ROAD_SIGN_UNIT * 2 }).map((_, i) => (
               <RoadSign key={`sign${i}`} kind={i % 2 === 0 ? "slippery" : "caution"} />
             ))}
           </div>
         </div>
+        }
         <div className="divider-track">
           {Array.from({ length: 14 }).map((_, i) => (
             <span className="divider-post" key={i} />
@@ -155,13 +156,15 @@ export default function RoadEnvironment({ sceneConfig, splash, activeAction, gea
 
       {/* 4.5 Ambient opposite-lane traffic — small, softly-blurred car
           silhouettes that continuously pass in the distance. */}
-      <div className="scene-ambient-traffic">
+      {![1, 2].includes(Number(scenarioId)) && cfg.ambientTraffic !== false && <div className="scene-ambient-traffic">
         <div className="scenery-track scenery-track-ambient-cars">
           {Array.from({ length: AMBIENT_CAR_UNIT * 2 }).map((_, i) => (
             <AmbientCar key={`ac${i}`} variant={i % 2} depth={i % 3} />
           ))}
         </div>
       </div>
+
+      }
 
       {/* 5. Traffic / signals */}
       {cfg.signal && (
@@ -208,7 +211,7 @@ export default function RoadEnvironment({ sceneConfig, splash, activeAction, gea
 
       {/* 8.5 Foreground rain — a second, sparser rain pass drawn ABOVE the
           rider so raindrops are visibly falling past/on them. */}
-      <RainEffect intensity={rainIntensity} foreground />
+      {rainIntensity !== "none" && <RainEffect intensity={rainIntensity} foreground />}
 
       {/* 9. Scenario hazard objects */}
       {cfg.pothole && (

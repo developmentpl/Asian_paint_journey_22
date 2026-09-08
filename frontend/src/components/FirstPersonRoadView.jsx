@@ -71,11 +71,11 @@ export default function FirstPersonRoadView({ config, activeAction, scenarioId, 
     <div ref={sceneRef} className={`road-scene fpv-scene fpv-motion-${sceneMotionState} ${activeAction === "arriveDestination" ? "fpv-arriving" : ""} ${[4, 5, 6, 7].includes(scenarioId) ? "fpv-aligned-road-scene" : ""} ${scenarioId === 6 ? "fpv-waterlogged-scene" : ""} ${scenarioId === 8 ? "fpv-crossing-scene" : ""} ${paused ? "hazard-decision-paused" : ""} ${potholeHit ? "fpv-pothole-hit" : ""} ${waterHit ? "fpv-water-hit" : ""} ${config.night ? "road-scene-night" : ""} ${slowing ? "fpv-slowing" : ""} ${avoiding ? "fpv-avoiding" : ""}`}>
       <div className="fpv-sky"><span className="fpv-horizon-glow" /></div>
       <div className="fpv-city" aria-hidden="true">{Array.from({length: 18}).map((_,i)=><i key={i} />)}</div>
-      <div className="fpv-roadside" aria-hidden="true">
+      {scenarioId !== 8 && <div className="fpv-roadside" aria-hidden="true">
         {Array.from({ length: 12 }).map((_, i) => (
           <i key={i} className={`fpv-roadside-object fpv-roadside-${i % 3}`} style={{ "--object-index": i }} />
         ))}
-      </div>
+      </div>}
       <div className="fpv-road">
         <span className="fpv-edge fpv-edge-left" /><span className="fpv-edge fpv-edge-right" />
         <span className="fpv-lane-stream fpv-lane-left">{Array.from({length: 7}).map((_,i)=><i key={i} style={{"--dash-index":i}} />)}</span>
@@ -90,14 +90,23 @@ export default function FirstPersonRoadView({ config, activeAction, scenarioId, 
       {config.pothole && <div className="fpv-hazard fpv-pothole"><i /></div>}
       {config.pedestrian && (
         <>
-          <div className="fpv-crossing-streetlights" aria-hidden="true"><i/><i/></div>
+          {scenarioId !== 8 && <div className="fpv-crossing-streetlights" aria-hidden="true"><i/><i/></div>}
+          <svg className="fpv-crossing-warning" viewBox="0 0 110 200" role="img" aria-label="Pedestrian crossing ahead">
+            <rect x="50" y="83" width="10" height="111" rx="2" fill="#b4c0ca" stroke="#526371" strokeWidth="2" />
+            <ellipse cx="55" cy="195" rx="18" ry="4" fill="#42515b" />
+            <rect x="18" y="18" width="74" height="74" rx="5" transform="rotate(45 55 55)" fill="#ffd126" stroke="#e6a700" strokeWidth="3" />
+            <rect x="22" y="22" width="66" height="66" rx="3" transform="rotate(45 55 55)" fill="none" stroke="#252b30" strokeWidth="1.5" />
+            <circle cx="60" cy="31" r="5" fill="#252b30" />
+            <path d="m56 41-9 16-5 19m10-20 12 8 4 13M54 44l-13 9-2 10m17-20 10 12 10 2" fill="none" stroke="#252b30" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M34 83h43" stroke="#252b30" strokeWidth="3" />
+          </svg>
           <div className="fpv-stop-line" aria-hidden="true" />
           <div className="fpv-stop-line-far" aria-hidden="true" />
           <div className={`fpv-crossing ${activeAction === "stopForPedestrian" ? "fpv-pedestrians-crossing" : "fpv-pedestrians-waiting"}`}>
             <div className="fpv-zebra" aria-hidden="true">
               {Array.from({ length: 7 }).map((_, index) => <i key={index} />)}
             </div>
-            <Pedestrian variant={1} stopped={false} child />
+            <Pedestrian variant={1} stopped={activeAction !== "stopForPedestrian"} profile />
           </div>
         </>
       )}
@@ -120,10 +129,13 @@ export default function FirstPersonRoadView({ config, activeAction, scenarioId, 
 
       <div className="fpv-cockpit" aria-hidden="true">
         <span className="fpv-mirror fpv-mirror-left" /><span className="fpv-mirror fpv-mirror-right" />
-        <span className="fpv-handle fpv-handle-left" /><span className="fpv-handle fpv-handle-right" />
-        <span className="fpv-arm fpv-arm-left"><i className="fpv-hand" /></span>
-        <span className="fpv-arm fpv-arm-right"><i className={`fpv-hand ${braking ? "fpv-hand-braking" : ""}`} /></span>
-        <span className="fpv-speedometer"><b>{sceneMotionState === "stopped" ? "0" : sceneMotionState === "decelerating" ? "18" : slowing ? "28" : "42"}</b><small>km/h</small></span>
+        <span className="fpv-handle fpv-handle-left">
+          <span className="fpv-arm fpv-arm-left"><i className="fpv-hand" /></span>
+        </span>
+        <span className="fpv-handle fpv-handle-right">
+          <span className="fpv-arm fpv-arm-right"><i className={`fpv-hand ${braking ? "fpv-hand-braking" : ""}`} /></span>
+        </span>
+        <span className="fpv-speedometer"><b>{sceneMotionState === "stopped" ? "0" : sceneMotionState === "decelerating" ? "18" : slowing ? "28" : "30"}</b><small>km/h</small></span>
         <span className="fpv-bike-front"><i /></span>
       </div>
       <RainEffect intensity={config.rain || "normal"} />

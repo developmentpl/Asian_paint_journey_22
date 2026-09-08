@@ -37,7 +37,7 @@ export async function savePlayerToSheet({ name, email, employeeId, plant }) {
 }
 
 /** Updates the existing registration row with the final game result. */
-export async function saveResultToSheet({ sessionId, score, correctAnswers, wrongAnswers, language }) {
+export async function saveResultToSheet({ sessionId, score, correctAnswers, wrongAnswers, language, gameDurationSeconds }) {
   if (!sessionId) throw new Error("The Google Sheets session ID is missing for this game.");
   return postToSheet({
     action: "complete",
@@ -46,6 +46,7 @@ export async function saveResultToSheet({ sessionId, score, correctAnswers, wron
     correctAnswers,
     wrongAnswers,
     language,
+    gameDurationSeconds,
   });
 }
 

@@ -23,8 +23,8 @@
  * Keyed by question id (1-10), matching backend/frontend questions.js.
  */
 export const roadSceneConfig = {
-  1: { rain: "light", vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, view: "pre-ride" },
-  2: { rain: "heavy", vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, lowVisibility: true, view: "rain-wide" },
+  1: { rain: "none", ambientTraffic: false, vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, view: "pre-ride" },
+  2: { rain: "heavy", ambientTraffic: false, vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, lowVisibility: true, view: "rain-wide" },
   3: { rain: "normal", vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: "small", turn: false, night: false, view: "side" },
   4: { rain: "normal", camera: "fpv", vehicle: { type: "car", initialDistance: "close" }, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, view: "following" },
   5: { rain: "normal", camera: "fpv", vehicle: { type: "car", initialDistance: "close", braking: true }, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, view: "braking" },

@@ -45,6 +45,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
+import { DEFAULT_STEP_DURATION } from "../data/scenarioActions.js";
 
 const ACTION_WRAPPER_CLASS = {
   reduceSpeed: "rider-slow",
@@ -133,6 +134,20 @@ function BikePhotoLayer({ baseName, active }) {
 
 export default function MotorcycleRider({ activeAction, geared, scenarioId, splash, journeyProgress = 0 }) {
   const { language } = useLanguage();
+  const [displaySpeed, setDisplaySpeed] = useState(40);
+  useEffect(() => {
+    if (scenarioId !== 2 || activeAction !== "reduceSpeed") {
+      setDisplaySpeed(40);
+      return undefined;
+    }
+    const started = performance.now();
+    const timer = setInterval(() => {
+      const progress = Math.min(1, (performance.now() - started) / (DEFAULT_STEP_DURATION * 0.8));
+      setDisplaySpeed(Math.round(40 - 20 * progress));
+      if (progress === 1) clearInterval(timer);
+    }, 50);
+    return () => clearInterval(timer);
+  }, [scenarioId, activeAction]);
   const actionClass = ACTION_WRAPPER_CLASS[activeAction] || "";
   const isConsequence = CONSEQUENCE_ACTIONS.has(activeAction);
   const headlightBright = activeAction === "headlightOn";
@@ -192,6 +207,13 @@ export default function MotorcycleRider({ activeAction, geared, scenarioId, spla
             <BikePhotoLayer baseName="bike-rider-plain" active={!helmetOnly && !fullyEquipped} />
             <BikePhotoLayer baseName="bike-rider-helmet" active={helmetOnly} />
             <BikePhotoLayer baseName="bike-rider-geared" active={fullyEquipped} />
+            <svg className="rider-mirrors" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+              <g stroke="#243340" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M973 481 1001 410 1030 395 M917 495 934 414 955 389" fill="none" />
+                <ellipse cx="1044" cy="384" rx="37" ry="22" fill="#a3cedf" transform="rotate(-15 1044 384)" />
+                <ellipse cx="963" cy="378" rx="32" ry="20" fill="#7398ae" transform="rotate(-15 963 378)" />
+              </g>
+            </svg>
             <span className="wheel-hub-motion wheel-hub-motion-rear" aria-hidden="true" />
             <span className="wheel-hub-motion wheel-hub-motion-front" aria-hidden="true" />
           </div>
@@ -211,6 +233,12 @@ export default function MotorcycleRider({ activeAction, geared, scenarioId, spla
       )}
 
       <div className="road-reflection" />
+      {scenarioId === 2 && activeAction === "reduceSpeed" && (
+        <div className="rider-speed-readout" role="status" aria-label={language === "hi" ? "रफ़्तार कम हो रही है" : "Reducing speed"}>
+          <span>{language === "hi" ? "रफ़्तार" : "SPEED"}</span>
+          <strong>{displaySpeed} <small>km/h</small></strong>
+        </div>
+      )}
     </div>
   );
 }

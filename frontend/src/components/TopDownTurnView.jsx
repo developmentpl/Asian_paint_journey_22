@@ -22,6 +22,9 @@ export default function TopDownTurnView({ activeAction, geared }) {
       <rect x="35" y="116" width="16" height="38" rx="8" fill="#101820" stroke="#667887" strokeWidth="3" />
       <path d="M43 35 25 71l18 55 18-55Z" fill="#248fc2" stroke="#082d49" strokeWidth="4" />
       <path d="M19 59h48M16 65l10-12m44 12L60 53" fill="none" stroke="#161e27" strokeWidth="5" strokeLinecap="round" />
+      <path d="M22 58 10 40M64 58 76 40" fill="none" stroke="#667887" strokeWidth="3" strokeLinecap="round" />
+      <ellipse cx="9" cy="37" rx="7" ry="5" fill="#a3cedf" stroke="#161e27" strokeWidth="2" />
+      <ellipse cx="77" cy="37" rx="7" ry="5" fill="#a3cedf" stroke="#161e27" strokeWidth="2" />
       <ellipse cx="43" cy="79" rx="21" ry="28" fill={geared ? "#f1de18" : "#47799b"} stroke="#17273a" strokeWidth="3" />
       <circle cx="43" cy="63" r="13" fill={geared ? "#222c36" : "#b87852"} stroke="#111820" strokeWidth="3" />
       {geared && <path d="M32 63h22" stroke="#c8effa" strokeWidth="5" strokeLinecap="round" />}
@@ -77,7 +80,11 @@ export default function TopDownTurnView({ activeAction, geared }) {
         </g>
       </svg>
 
-      <div className="topdown-turn-warning" aria-hidden="true"><span>↱</span><small>SLIPPERY CURVE</small></div>
+      <div className="topdown-turn-warning" aria-hidden="true">
+        <div className="topdown-turn-warning-face"><span>↱</span><small>SLIPPERY CURVE</small></div>
+        <div className="topdown-turn-warning-post" />
+        <div className="topdown-turn-warning-base" />
+      </div>
       <div className="topdown-puddle topdown-puddle-one" aria-hidden="true" />
       <div className="topdown-puddle topdown-puddle-two" aria-hidden="true" />
 

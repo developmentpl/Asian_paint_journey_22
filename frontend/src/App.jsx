@@ -122,12 +122,23 @@ function AppShell() {
   }, [resumeTarget]);
 
   const handleStartJourney = useCallback(() => {
+    const timedPlayer = { ...player, gameStartedAt: Date.now(), gameDurationSeconds: null };
+    setPlayer(timedPlayer);
+    persistSession({ sessionId, player: timedPlayer });
     setScreen("game");
-  }, []);
+  }, [player, sessionId]);
 
   const handleGameComplete = useCallback(() => {
+    const timedPlayer = {
+      ...player,
+      gameDurationSeconds: player?.gameStartedAt
+        ? Math.max(0, Math.round((Date.now() - player.gameStartedAt) / 1000))
+        : null,
+    };
+    setPlayer(timedPlayer);
+    persistSession({ sessionId, player: timedPlayer });
     setScreen("results");
-  }, []);
+  }, [player, sessionId]);
 
   const handlePlayAgain = useCallback(() => {
     clearStoredSession();

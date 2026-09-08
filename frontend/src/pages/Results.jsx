@@ -69,6 +69,7 @@ export default function Results({ player, sessionId, onPlayAgain }) {
     try {
       await saveResultToSheet({
         sessionId: player?.sheetSessionId,
+        gameDurationSeconds: player?.gameDurationSeconds ?? null,
         score: data.session.score,
         correctAnswers: data.session.correct_answers,
         wrongAnswers: data.session.wrong_answers,

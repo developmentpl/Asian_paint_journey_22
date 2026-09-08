@@ -3,7 +3,7 @@ const SHEET_NAME = 'GameData';
 const HEADERS = [
   'Session ID', 'Name', 'Email', 'Employee ID', 'Plant', 'Language',
   'Start Date', 'Start Time', 'Final Score', 'Correct Answers',
-  'Wrong Answers', 'Completion Date', 'Completion Time', 'Status',
+  'Wrong Answers', 'Completion Date', 'Completion Time', 'Status', 'Game Duration (hh:mm:ss)',
 ];
 const LEGACY_HEADERS = ['Name', 'Email', 'Employee ID', 'Plant', 'Date', 'Time'];
 
@@ -45,7 +45,7 @@ function register_(spreadsheet, sheet, data) {
     timestamp.date,
     timestamp.time,
     '', '', '', '', '',
-    'In Progress',
+    'In Progress', '',
   ]);
   return jsonResponse_({
     success: true,
@@ -72,13 +72,15 @@ function complete_(spreadsheet, sheet, data) {
 
   const timestamp = timestamp_(spreadsheet);
   sheet.getRange(row, 6).setValue(clean_(data.language));
-  sheet.getRange(row, 9, 1, 6).setValues([[
+  sheet.getRange(row, 15).setNumberFormat('[hh]:mm:ss');
+  sheet.getRange(row, 9, 1, 7).setValues([[
     Number(data.score),
     Number(data.correctAnswers),
     Number(data.wrongAnswers),
     timestamp.date,
     timestamp.time,
     'Completed',
+    data.gameDurationSeconds == null ? '' : Number(data.gameDurationSeconds) / 86400,
   ]]);
   return jsonResponse_({
     success: true,
@@ -106,6 +108,11 @@ function validateRegistration_(data) {
 }
 
 function validateCompletion_(data) {
+  if (data.gameDurationSeconds != null &&
+      (typeof data.gameDurationSeconds !== 'number' ||
+       !Number.isSafeInteger(data.gameDurationSeconds) || data.gameDurationSeconds < 0)) {
+    throw new Error('gameDurationSeconds must be a non-negative integer.');
+  }
   if (typeof data.sessionId !== 'string' || !data.sessionId.trim()) {
     throw new Error('sessionId is required.');
   }
@@ -138,6 +145,27 @@ function ensureHeaders_(sheet) {
 
   const existing = sheet.getRange(1, 1, 1, HEADERS.length).getDisplayValues()[0];
   if (headersMatch_(existing, HEADERS)) return;
+
+  // Convert the earlier seconds column to native Sheets durations once.
+  if (headersMatch_(existing, HEADERS.slice(0, 14)) && existing[14] === 'Game Duration (seconds)') {
+    const count = sheet.getLastRow() - 1;
+    if (count > 0) {
+      const range = sheet.getRange(2, 15, count, 1);
+      const values = range.getValues().map(function (row) {
+        return [typeof row[0] === 'number' ? row[0] / 86400 : row[0]];
+      });
+      range.setValues(values);
+      range.setNumberFormat('[hh]:mm:ss');
+    }
+    sheet.getRange(1, 15).setValue(HEADERS[14]);
+    return;
+  }
+
+  // Append duration to the existing result layout without moving old data.
+  if (headersMatch_(existing, HEADERS.slice(0, 14)) && !existing[14]) {
+    sheet.getRange(1, 15).setValue(HEADERS[14]);
+    return;
+  }
 
   // One-time migration from the earlier six-column registration-only layout.
   const legacy = sheet.getRange(1, 1, 1, LEGACY_HEADERS.length).getDisplayValues()[0];

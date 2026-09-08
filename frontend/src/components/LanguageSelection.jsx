@@ -25,7 +25,9 @@ export default function LanguageSelection({ onSelected }) {
         अपनी भाषा चुनें
       </p>
       <p className="language-select-subtitle">
-        Select the language you'd like to play in. · वह भाषा चुनें जिसमें आप खेलना चाहते हैं।
+        Select the language you'd like to play in.
+        <br />
+        वह भाषा चुनें जिसमें आप खेलना चाहते हैं।
       </p>
 
       {/* Text-only buttons — deliberately no flag icons or other
