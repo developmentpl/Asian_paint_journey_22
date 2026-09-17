@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 import PlayerForm from "../components/PlayerForm.jsx";
 import EmployeeDetails from "../components/EmployeeDetails.jsx";
-import { PlayerAPI, GameAPI } from "../services/api.js";
+import { GameEngine } from "../services/gameEngine.js";
 import { savePlayerToSheet } from "../services/googleSheets.js";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
 
 /**
  * Registration page — Screen 1 (name/email) then Screen 2 (employee id/plant).
- * On completion, saves registration details to Google Sheets, creates an
- * anonymous MySQL scoring identity, then starts the game session.
+ * On completion, saves registration details to Google Sheets, then starts
+ * an in-browser game session that uses the Sheet's session ID.
  */
 export default function Registration({ onRegistered }) {
   const { t } = useLanguage();
@@ -33,11 +33,10 @@ export default function Registration({ onRegistered }) {
     setError("");
     try {
       const sheetRegistration = await savePlayerToSheet(merged);
-      const anonymousPlayer = await PlayerAPI.createAnonymous();
-      const { session } = await GameAPI.start(anonymousPlayer.id);
+      const { session } = GameEngine.start(sheetRegistration.sessionId);
       onRegistered({
         player: {
-          id: anonymousPlayer.id,
+          id: sheetRegistration.sessionId,
           name: merged.name,
           email: merged.email,
           employeeId: merged.employeeId,

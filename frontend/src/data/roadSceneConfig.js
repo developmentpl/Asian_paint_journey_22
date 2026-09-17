@@ -20,7 +20,7 @@
  *   - "top"       a tilted, semi top-down angle so a turn's road geometry
  *                 is easier to read than a flat side view
  *
- * Keyed by question id (1-10), matching backend/frontend questions.js.
+ * Keyed by question id (1-10), matching data/questions.js.
  */
 export const roadSceneConfig = {
   1: { rain: "none", ambientTraffic: false, vehicle: null, signal: null, pedestrian: false, pothole: false, puddle: null, turn: false, night: false, view: "pre-ride" },

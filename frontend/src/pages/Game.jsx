@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import GameScene from "../components/GameScene.jsx";
-import { GameAPI } from "../services/api.js";
+import { GameEngine } from "../services/gameEngine.js";
 import { useAudio } from "../components/AudioManager.jsx";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
 import scenarioAudio from "../data/scenarioAudio.js";
@@ -10,9 +10,8 @@ import scenarioAudio from "../data/scenarioAudio.js";
  *   question -> answerSelected -> animation -> feedback -> readyToContinue
  *
  * - question: scenario + answer buttons are live.
- * - answerSelected: a choice was clicked; buttons lock immediately and we
- *   wait on the backend to score it (source of truth — never scored
- *   client-side).
+ * - answerSelected: a choice was clicked; buttons lock immediately and
+ *   the game engine scores it (services/gameEngine.js).
  * - animation: ScenarioController plays the rider's real-time
  *   action (correct path) or consequence (wrong path) for this scenario.
  * - feedback: the explanation card appears (points/heading/explanation).
@@ -59,14 +58,12 @@ export default function Game({ player, sessionId, onComplete }) {
   const answerInFlightRef = useRef(false);
   const scenarioOneRemediationRef = useRef(false);
 
-  // Recover true progress from the backend (refresh protection). The
-  // backend only tracks answered-question IDs, not per-question
-  // correctness for an in-progress session (that's only summarized once
-  // COMPLETED), so on resume past Scenario 1 we assume gear was earned —
-  // a harmless cosmetic default that never touches scoring.
+  // Recover saved progress from the game engine (refresh protection).
+  // On resume past Scenario 1 we assume gear was earned — a harmless
+  // cosmetic default that never touches scoring.
   useEffect(() => {
     let cancelled = false;
-    GameAPI.getSession(sessionId)
+    GameEngine.getSession(sessionId)
       .then((data) => {
         if (cancelled) return;
         setSession(data.session);
@@ -157,7 +154,7 @@ export default function Game({ player, sessionId, onComplete }) {
     setPhase(PHASE.ANSWER_SELECTED);
     setError("");
     try {
-      const data = await GameAPI.submitAnswer({
+      const data = await GameEngine.submitAnswer({
         sessionId,
         questionId: scenario.id,
         selectedAnswer,
@@ -170,11 +167,9 @@ export default function Game({ player, sessionId, onComplete }) {
         return;
       }
 
-      // The backend's result.explanation is always English (backend/data/
-      // questions.js is untouched by the language feature — it's only the
-      // scoring source of truth). Swap in the current language's local
-      // explanation text for this scenario before showing it; isCorrect/
-      // pointsAwarded stay exactly as the backend computed them.
+      // The engine's result.explanation is always English (it scores
+      // against data/questions.js). Swap in the current language's
+      // explanation text; isCorrect/pointsAwarded are unchanged.
       const result = { ...data.result, explanation: scenario.explanation };
       setFeedback(result);
       if (data.session) {
@@ -272,7 +267,7 @@ export default function Game({ player, sessionId, onComplete }) {
       if (completingRef.current) return;
       completingRef.current = true;
       try {
-        await GameAPI.complete(sessionId);
+        await GameEngine.complete(sessionId);
         stopAmbience();
         playEffect("complete");
         onComplete();

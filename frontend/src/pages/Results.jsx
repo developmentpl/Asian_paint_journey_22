@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ScoreBoard from "../components/ScoreBoard.jsx";
 import ResultsReview from "../components/ResultsReview.jsx";
-import { GameAPI } from "../services/api.js";
+import { GameEngine } from "../services/gameEngine.js";
 import { saveResultToSheet } from "../services/googleSheets.js";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
 import RainEffect from "../components/RainEffect.jsx";
@@ -12,7 +12,7 @@ import resultsHindiAudio from "../assets/audio/results-hi.mp3";
 import finishHindiAudio from "../assets/audio/finish-hi.mp3";
 
 /**
- * Results page — fetches the final, backend-computed results and shows
+ * Results page — loads the final results from the game engine and shows
  * the scoreboard, performance message, decision review and the
  * Play Again / Finish actions.
  */
@@ -29,7 +29,7 @@ export default function Results({ player, sessionId, onPlayAgain }) {
   const playedScreenAudioRef = useRef(null);
 
   useEffect(() => {
-    GameAPI.getResults(sessionId)
+    GameEngine.getResults(sessionId)
       .then(setData)
       .catch((err) => setError(err.message));
   }, [sessionId]);
@@ -45,12 +45,10 @@ export default function Results({ player, sessionId, onPlayAgain }) {
     if (playNarration(source)) playedScreenAudioRef.current = playbackKey;
   }, [data, finished, language, playNarration]);
 
-  // The backend always returns question/options/explanation in English
-  // (backend/data/questions.js is untouched by the language feature —
-  // it's only ever the source of truth for scoring). Swap that display
-  // text for the current language's local copy, matched by questionId;
-  // selectedAnswer/correctAnswer/isCorrect stay exactly as the backend
-  // computed them, since those are canonical option indices, not text.
+  // The engine returns question/options/explanation in English. Swap that
+  // display text for the current language's copy, matched by questionId;
+  // selectedAnswer/correctAnswer/isCorrect are option indices, so they
+  // stay the same in every language.
   const localizedReview = useMemo(() => {
     if (!data?.review) return null;
     return data.review.map((item) => {
@@ -70,9 +68,7 @@ export default function Results({ player, sessionId, onPlayAgain }) {
       await saveResultToSheet({
         sessionId: player?.sheetSessionId,
         gameDurationSeconds: player?.gameDurationSeconds ?? null,
-        score: data.session.score,
-        correctAnswers: data.session.correct_answers,
-        wrongAnswers: data.session.wrong_answers,
+        answers: data.answers,
         language: language === "hi" ? "Hindi" : "English",
       });
       setResultSaved(true);

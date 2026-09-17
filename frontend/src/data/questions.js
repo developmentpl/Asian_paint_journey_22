@@ -1,11 +1,14 @@
 /**
  * Road Safety in Rain — Scenario / Question data (frontend copy)
  * ------------------------------------------------
- * Used to render scenario visuals (title, description, options, environment).
- * The BACKEND copy (backend/data/questions.js) is the source of truth for
- * scoring — the server always re-checks the selected answer itself and
- * never trusts a score value from the browser. Keep both files in sync
- * whenever scenario text changes.
+ * Used to render scenario visuals (title, description, options, environment)
+ * AND as the answer key: services/gameEngine.js scores each answer against
+ * `correctAnswer` here.
+ *
+ * If you change a `correctAnswer` or reorder options, also update:
+ *   - data/questions.hi.js (same option order, Hindi text)
+ *   - ANSWER_KEY in google-apps-script/Code.gs (it re-scores the
+ *     submitted answers before saving the result to the Sheet)
  */
 
 export const questions = [

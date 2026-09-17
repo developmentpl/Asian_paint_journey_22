@@ -2,11 +2,14 @@
 
 ## Exact `GameData` headers
 
-Enter these values in cells `A1:O1`:
+Enter these values in cells `A1:Y1`:
 
-`Session ID | Name | Email | Employee ID | Plant | Language | Start Date | Start Time | Final Score | Correct Answers | Wrong Answers | Completion Date | Completion Time | Status | Game Duration (hh:mm:ss)`
+`Session ID | Name | Email | Employee ID | Plant | Language | Start Date | Start Time | Final Score | Correct Answers | Wrong Answers | Completion Date | Completion Time | Status | Game Duration (hh:mm:ss) | Q1 Answer | Q2 Answer | Q3 Answer | Q4 Answer | Q5 Answer | Q6 Answer | Q7 Answer | Q8 Answer | Q9 Answer | Q10 Answer`
 
-If the tab is empty, the script creates and freezes this header row. If row
+If the tab is empty, the script creates and freezes this header row. If
+the tab already has the earlier 15-column layout (`A1:O1`), the script adds
+the `Q1 Answer` … `Q10 Answer` headers in columns P–Y automatically on the
+next request; existing rows are left unchanged. If row
 1 already contains data, the script validates the exact headers before it
 appends registrations. The updated script also automatically migrates the
 earlier six-column header layout by inserting the new Session ID column and
@@ -38,8 +41,28 @@ new version, and deploy. Use the `/exec` URL in React, not the `/dev` URL.
 The Web App supports two JSON actions:
 
 - `register`: appends one attempt and returns a unique `sessionId`.
-- `complete`: finds that `sessionId` and updates score, counts, language,
-  completion timestamp, and status. Repeating `complete` is idempotent.
+- `complete`: finds that `sessionId` and saves the result. The request
+  sends the player's 10 chosen options (`answers`, e.g. `[1, 0, 1, …]`,
+  `null` for an unanswered scenario). The script calculates the score and
+  the correct/wrong counts itself using `ANSWER_KEY`, then writes them
+  with the language, completion timestamp, status and one `Q1`–`Q10`
+  cell per scenario: `Correct`, `Wrong (A)` or `Not answered`. The letter
+  in `Wrong (…)` is the chosen option's position in
+  `frontend/src/data/questions.js` (A = first option), **not** the letter
+  the player saw — the game shuffles the on-screen order.
+  Repeating `complete` is idempotent.
+
+## Answer key
+
+The game runs fully in the browser (there is no backend server or
+database). To stop anyone faking a score, the final score in the Sheet is
+worked out here, from `ANSWER_KEY` at the top of `Code.gs`
+(0 = A, 1 = B, 2 = C, 3 = D, one entry per scenario in order).
+
+`ANSWER_KEY` must match `correctAnswer` in
+`frontend/src/data/questions.js`. If you change a correct answer or the
+option order there, update `ANSWER_KEY` too and redeploy the script
+(**Deploy → Manage deployments → Edit → New version → Deploy**).
 
 ## Game duration update
 

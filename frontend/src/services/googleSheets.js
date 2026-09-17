@@ -36,15 +36,19 @@ export async function savePlayerToSheet({ name, email, employeeId, plant }) {
   return result;
 }
 
-/** Updates the existing registration row with the final game result. */
-export async function saveResultToSheet({ sessionId, score, correctAnswers, wrongAnswers, language, gameDurationSeconds }) {
+/**
+ * Updates the existing registration row with the final game result.
+ * `answers` is the chosen option index for each scenario in id order
+ * (null if unanswered). The Apps Script works out the score from these
+ * answers using its own answer key, so a score is never sent from here.
+ */
+export async function saveResultToSheet({ sessionId, answers, language, gameDurationSeconds }) {
   if (!sessionId) throw new Error("The Google Sheets session ID is missing for this game.");
+  if (!Array.isArray(answers)) throw new Error("The game answers are missing for this result.");
   return postToSheet({
     action: "complete",
     sessionId,
-    score,
-    correctAnswers,
-    wrongAnswers,
+    answers,
     language,
     gameDurationSeconds,
   });

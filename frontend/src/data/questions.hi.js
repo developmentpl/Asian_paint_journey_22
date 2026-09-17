@@ -5,12 +5,12 @@
  * option ORDER: same `id`s, same number of options in the same index
  * positions, same `correctAnswer` index. Only the text is translated.
  *
- * This is what makes translation safe with zero backend/scoring changes:
- * an option's identity is its canonical index (0-3), not its text or
+ * This is what makes translation safe with zero scoring changes: an
+ * option's identity is its canonical index (0-3), not its text or
  * displayed letter — see utils/shuffle.js and AnswerOptions.jsx. As long
- * as index 0 here is the Hindi translation of index 0 in questions.js
- * (and in backend/data/questions.js), the backend's correctAnswer index
- * keeps validating correctly no matter which language is displayed.
+ * as index 0 here is the Hindi translation of index 0 in questions.js,
+ * the answer key (questions.js + ANSWER_KEY in Code.gs) keeps scoring
+ * correctly no matter which language is displayed.
  *
  * Wording is deliberately kept in simple, everyday spoken Hindi (short
  * sentences, common words) rather than formal/literary Hindi — e.g.

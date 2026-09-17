@@ -16,9 +16,9 @@ import { useLanguage } from "../i18n/LanguageContext.jsx";
  *
  * The A/B/C/D screen positions are randomized once per scenario (so the
  * correct answer isn't predictably always "B") — see `optionOrder` below
- * and the comment in utils/shuffle.js for why this needs no backend
+ * and the comment in utils/shuffle.js for why this needs no scoring
  * changes: options are identified by their canonical index (a stable,
- * shuffle-proof identity — the backend's `correctAnswer` refers to this
+ * shuffle-proof identity — `correctAnswer` in questions.js refers to this
  * same index, never to a displayed letter), not by the letter they
  * happen to be displayed under.
  */

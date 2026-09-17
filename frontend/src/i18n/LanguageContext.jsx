@@ -38,11 +38,10 @@ function writeStoredLanguage(lang) {
  * The language is picked ONCE on the Language Selection screen and then
  * persisted in sessionStorage for "the complete game session" (same tab,
  * survives refresh, exactly like the existing player/session recovery in
- * App.jsx) — see the STORAGE_KEY read/write above. Nothing about
- * scoring, the backend, or MySQL is touched: translated scenario option
- * arrays keep the exact same order/index as the English/backend source,
- * so the canonical option index the backend validates against is
- * unaffected by which language is showing (see data/questions.hi.js's
+ * App.jsx) — see the STORAGE_KEY read/write above. Scoring is not
+ * affected: translated scenario option arrays keep the exact same
+ * order/index as the English source, so the canonical option index the
+ * game engine and Apps Script score against is unaffected by which language is showing (see data/questions.hi.js's
  * top comment and utils/shuffle.js for why that's safe).
  */
 export function LanguageProvider({ children }) {

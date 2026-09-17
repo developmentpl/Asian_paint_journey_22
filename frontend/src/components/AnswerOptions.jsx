@@ -2,7 +2,7 @@ const LETTERS = ["A", "B", "C", "D"];
 
 /**
  * Large interactive decision buttons. Once `feedback` is present (an
- * answer has been submitted and scored by the backend) every button is
+ * answer has been submitted and scored by the game engine) every button is
  * disabled and the selected/correct options are highlighted — this is
  * what stops repeated clicks from ever re-scoring the same question
  * (spec §11/§38): the buttons simply stop being clickable.
@@ -11,9 +11,8 @@ const LETTERS = ["A", "B", "C", "D"];
  * per-load shuffle) saying which canonical option renders at each
  * A/B/C/D position — the letter is purely cosmetic. Every click, and
  * every highlight comparison against `feedback`, uses the option's
- * canonical index (`optionId`), which is exactly what the backend
- * already validates against — the shuffle never has to be sent to or
- * understood by the server.
+ * canonical index (`optionId`), which is exactly what the game engine
+ * scores against — the shuffle never has to be saved or sent anywhere.
  */
 export default function AnswerOptions({ options, order, onSelect, disabled, feedback }) {
   const displayOrder = Array.isArray(order) && order.length === options.length ? order : options.map((_, i) => i);

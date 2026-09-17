@@ -5,11 +5,11 @@
  *
  * IMPORTANT: this only ever reshuffles the *display* order. Each option's
  * real identity is its canonical index into the scenario's `options`
- * array (0-3) — that's what gets sent to the backend when the player
- * picks an answer, and it's exactly what backend/data/questions.js's
- * `correctAnswer` already refers to. So shuffling here needs zero backend
- * changes: the server was always validating by option identity, never by
- * displayed letter.
+ * array (0-3) — that's what the game engine scores when the player picks
+ * an answer, and it's exactly what `correctAnswer` in data/questions.js
+ * (and ANSWER_KEY in the Apps Script) refers to. So shuffling here needs
+ * no scoring changes: answers are always checked by option identity,
+ * never by displayed letter.
  */
 export function shuffleIndices(n) {
   const arr = Array.from({ length: n }, (_, i) => i);

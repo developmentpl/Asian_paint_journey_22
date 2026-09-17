@@ -6,11 +6,10 @@ import { useLanguage } from "../i18n/LanguageContext.jsx";
  * the player's answer vs. the correct answer and the safety explanation.
  *
  * `review` is expected to already be localized (see Results.jsx, which
- * takes the backend's response — always English, since the backend/DB
- * are untouched by the language feature — and swaps in the question/
+ * takes the game engine's English results and swaps in the question/
  * options/explanation text from the current language's local scenario
  * data, matched by questionId; selectedAnswer/correctAnswer/isCorrect
- * stay exactly as the backend computed them).
+ * stay exactly as the engine computed them).
  *
  * Deliberately doesn't show an A/B/C/D letter here: those letters are
  * randomized per play-through (see Scenario.jsx's per-scenario shuffle),

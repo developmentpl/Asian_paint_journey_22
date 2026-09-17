@@ -7,7 +7,7 @@ import LanguageSelection from "./components/LanguageSelection.jsx";
 import { AudioProvider, MuteButton } from "./components/AudioManager.jsx";
 import brandLogo from "./assets/images/brand-logo.png";
 import { LanguageProvider, useLanguage } from "./i18n/LanguageContext.jsx";
-import { GameAPI } from "./services/api.js";
+import { GameEngine } from "./services/gameEngine.js";
 
 const STORAGE_KEY = "roadSafetyGame.session";
 
@@ -50,9 +50,9 @@ function clearStoredSession() {
  * onward reads through useLanguage() so it switches the instant a
  * language is chosen.
  *
- * Game truth (score, progress, status) always comes from the backend.
- * sessionStorage only remembers *which* session/player to reconnect to on
- * refresh — see step 37/38 of the spec ("Browser Refresh Protection").
+ * Game state (score, progress, status) is kept by services/gameEngine.js,
+ * which stores it in sessionStorage so a refresh resumes the same game.
+ * STORAGE_KEY here only remembers *which* session/player to reconnect to.
  * The selected language is stored the same way (see i18n/LanguageContext)
  * so it persists across a refresh but is asked again in a fresh tab —
  * "for the complete game session", not forever.
@@ -83,7 +83,7 @@ function AppShell() {
       return;
     }
 
-    GameAPI.getSession(stored.sessionId)
+    GameEngine.getSession(stored.sessionId)
       .then((data) => {
         setSessionId(stored.sessionId);
         setPlayer(stored.player);
@@ -141,11 +141,12 @@ function AppShell() {
   }, [player, sessionId]);
 
   const handlePlayAgain = useCallback(() => {
+    GameEngine.clear(sessionId);
     clearStoredSession();
     setPlayer(null);
     setSessionId(null);
     setScreen("registration");
-  }, []);
+  }, [sessionId]);
 
   return (
     <AudioProvider>
