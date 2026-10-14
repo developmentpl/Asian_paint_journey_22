@@ -14,6 +14,7 @@ export const plants = [
   "AP Infinity Plant (Rohtak)",
   "AP Infinity Plant (Patancheru)",
   "AP Infinity Plant (Sriperumbudur)",
+  "AP Infinity Plant (Dahej)",
   "AP Color Protect (Sarigam)",
   "AP Color Protect (Taloja)",
   "AP Color Protect (HO)",
